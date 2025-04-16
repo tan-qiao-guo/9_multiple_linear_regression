@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>.white[.large[9. 线性回归]]</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="zh-CN.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+    <link rel="stylesheet" href="footer-header.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# .white[.large[<code>9.</code> 线性回归]]
+]
+.author[
+### 
+]
+
+---
+
+
+layout: true
+  
+&lt;div class="my-footer"&gt;&lt;span&gt;Qiao-Guo Tan/CEE/XMU | tanqg@xmu.edu.cn | 2025-Apr-17   
+&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;
+&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;
+&lt;/span&gt;&lt;/div&gt; 
+
+
+---
+
+class: inverse
+
+### *Statistics starts with a problem, proceeds with the collection of data, continues with the data analysis and finishes with conclusions.*  
+
+### 统计学始于问题，进于数据收集与分析，终于结论。
+
+--
+
+### *It is a common mistake of inexperienced statisticians to plunge into a complex analysis without paying attention to the objectives or even whether the data are appropriate for the proposed analysis.*  
+### 缺乏经验的人常犯这样的错误：不清楚目的，不管数据和分析方法是否相适，就直接一头扎进去，做复杂的统计分析。 
+
+-- Faraway, Julian James. 2015. Linear models with R. 2nd ed. CRC Press.
+
+???
+As Einstein said, the formulation of a problem is often more essential than its solution
+which may be merely a matter of mathematical or experimental skill.
+
+
+---
+class: inverse
+
+&lt;br&gt;
+&lt;br&gt;
+### *A main goal in science is the understanding of the relationship among important variables. The relationship, either described qualitatively or quantitatively, is a model.*  
+
+### 科学的主要目的之一是理解重要变量之间的关系。对关系的描述就是模型，关系可以是定性的也可以是定量的。
+&lt;br&gt;
+
+-- Qian S. 2017. Environmental and Ecological Statistics with R. 2nd ed. CRC Press.
+
+
+???
+
+模型的两个目的：归因、预测  
+In general, a model is developed with one of the two general objectives causal inference and prediction.
+---
+
+## 线性模型  
+
+- .large[假设我们需要模拟**响应变量**（*Y*）和3个**预测变量**（*X*&lt;sub&gt;1&lt;/sub&gt;，*X*&lt;sub&gt;2&lt;/sub&gt;，*X*&lt;sub&gt;3&lt;/sub&gt;）之间的关系，可以写成以下通式：]  
+
+`$$Y = f (X_1,X_2,X_3) + ε$$`
+--
+
+- .large[然而，*f*到底是什么函数，基于数据通常难以确知。我们可以用一个简单的线性模型进行模拟（问题因此简化为参数β&lt;sub&gt;i&lt;/sub&gt;值的估算）：]
+ 
+`$$Y = β_0 + β_1X_1 + β_2X_2 + β_3X_3 + ε$$`
+--
+
+- .large[需注意，在线性模型中参数是线性形式的，但变量不一定是线性的，例如以下也是线性模型：]
+
+
+`$$Y = β_0 + β_1X_1 + β_2logX_2 + β_3X_1X_2 + ε$$`
+
+--
+
+- .large[而以下模型就不是线性模型：] 
+`$$Y = β_0 + β_1X_1^{β_2} + ε$$`
+
+---
+
+## 关于线性模型的常见误解
+
+- .large[线性模型看上去很简单，只能处理简单的数据？不是，线性模型可以处理非常复杂的数据。]
+
+&lt;br&gt;
+--
+
+- .large[线性模型描述的关系一定是直线？不是，线性模型也可以描述曲线关系。]
+
+&lt;br&gt;
+
+--
+- .large[此外，需注意：非线性模型通常来自对**理论**、**机理**的理解，而非**经验**研究。]
+
+
+---
+
+## 线性回归（Linear Regression） 
+
+.large[线性模型描述一个**响应变量** *Y*与一个或多个**预测变量** *X*之间的关系。]  
+
+--
+
+- .large[响应变量：也称为输出变量、因变量]  
+
+--
+
+- .large[响应变量需为连续变量]  
+
+--
+
+- .large[预测变量：也称为输入变量、自变量、解释变量]  
+
+--
+
+- .large[预测变量可以是连续变量、离散变量、分类变量]  
+
+--
+
+&lt;br&gt;
+&lt;br&gt;  
+
+.large[**简单线性回归**（simple linear regression）：仅有一个预测变量]   
+
+--
+.large[**多元线性回归**（multiple linear regression）： 有多个预测变量]  
+
+---
+
+class: inverse, center, middle  
+
+##  简单线性回归  
+
+---
+
+## 需要用到的程序包  
+
+
+```r
+library(tidyverse)
+library(QuantPsyc) 
+library(relaimpo) 
+```
+
+--
+## 数据 
+
+数据下载：https://pan.baidu.com/s/1z93sG8AfkPdKi4UClXjOtQ?pwd=y281  
+数据来源：Qian S. 2017. Environmental and Ecological Statistics with R. 2nd ed. CRC Press. Chapter 5 Linear Models.
+
+
+
+
+
+
+---
+
+## 了解数据  
+
+
+```r
+d0 &lt;- read.csv("laketrout.csv")
+d &lt;- na.omit(d0) #length存在缺失值，为便于分析，去除缺失值
+head(d)
+```
+
+```
+##   length  pcb n year
+## 1 75.946 31.3 1 1974
+## 2 74.930  7.9 1 1974
+## 3 68.580 26.7 1 1974
+## 4 66.802  8.3 1 1974
+## 5 69.596 11.3 1 1974
+## 6 69.088 12.6 1 1974
+```
+
+```r
+str(d)
+```
+
+```
+## 'data.frame':	632 obs. of  4 variables:
+##  $ length: num  75.9 74.9 68.6 66.8 69.6 ...
+##  $ pcb   : num  31.3 7.9 26.7 8.3 11.3 12.6 8.8 10.8 4.4 4.8 ...
+##  $ n     : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ year  : int  1974 1974 1974 1974 1974 1974 1974 1974 1974 1974 ...
+##  - attr(*, "na.action")= 'omit' Named int [1:16] 130 140 141 142 143 144 145 146 153 154 ...
+##   ..- attr(*, "names")= chr [1:16] "130" "140" "141" "142" ...
+```
+
+&lt;br&gt;  
+
+数据来源：Qian S. 2017. Environmental and Ecological Statistics with R. 2nd ed. CRC Press.
+
+---
+
+## 背景知识  
+
+- 突吻红点鲑（lake trout，*Salvelinus namaycush*）：分布于北美，生长缓慢，所吃食物随自身尺寸增长而改变&lt;sup&gt;[[1]](https://en.wikipedia.org/wiki/Lake_trout)&lt;/sup&gt;
+- 美国1979年禁止生产PCB&lt;sup&gt;[[2]](https://archive.epa.gov/epa/aboutepa/epa-bans-pcb-manufacture-phases-out-uses.html)&lt;/sup&gt;
+
+
+.pull-left[
+
+&lt;img src="figs/trout_1.jpg" width="500" height="333.333333333333" /&gt;
+]
+
+--
+
+.pull-right[
+
+&lt;img src="figs/trout_2.png" width="498.192771084337" height="330.120481927711" /&gt;
+
+]
+
+
+---
+
+## 提出问题  
+
+- .large2[鱼体内PCB浓度是否有时间趋势？]  
+
+--
+
+- .large2[鱼体内PCB浓度是否受鱼尺寸的影响？]  
+
+---
+
+## 作图了解数据：PCB vs. 年份，PCB vs. 鱼体长  
+
+
+```r
+library(tidyverse)
+```
+
+.pull-left[
+
+```r
+ggplot(d, aes(year, pcb))+
+  geom_point()
+```
+
+&lt;img src="figs/pcb_2.png" width="432" height="324" /&gt;
+]
+
+
+
+.pull-right[
+
+```r
+ggplot(d, aes(length, pcb))+
+  geom_point()
+```
+
+&lt;img src="figs/pcb_1.png" width="432" height="324" /&gt;
+]
+
+
+---
+## 作图了解数据：PCB浓度采用对数坐标
+
+- 污染物浓度通常呈对数正态分布  
+- 从图上也可得知，PCB浓度在对数坐标下分布更均匀  
+
+.pull-left[
+
+```r
+ggplot(d, aes(year, pcb))+
+  geom_point()+
+  scale_y_log10()
+```
+
+&lt;img src="figs/pcb_4.png" width="432" height="324" /&gt;
+  
+]
+
+.pull-right[
+
+```r
+ggplot(d, aes(length, pcb))+
+  geom_point()+
+  scale_y_log10()
+```  
+  
+&lt;img src="figs/pcb_3.png" width="432" height="324" /&gt;
+  
+]
+
+---
+
+## 数据转化：PCB浓度取自然对数  
+
+- .large[根据以上的观察，将PCB浓度取对数后用于数据分析]  
+
+
+```r
+d$ln_pcb &lt;- log(d$pcb)  #增加ln_pcb数据列，为pcb的自然对数（也可取10为底的对数）
+head(d) 
+```
+
+```
+##   length  pcb n year   ln_pcb
+## 1 75.946 31.3 1 1974 3.443618
+## 2 74.930  7.9 1 1974 2.066863
+## 3 68.580 26.7 1 1974 3.284664
+## 4 66.802  8.3 1 1974 2.116256
+## 5 69.596 11.3 1 1974 2.424803
+## 6 69.088 12.6 1 1974 2.533697
+```
+
+---
+
+### 年份对PCB浓度的影响 - `lm()`分析结果的解读   
+
+.pull-left67[
+
+```r
+mod.1 &lt;- lm(ln_pcb ~ year, data=d) #格式：响应变量 ~ 预测变量
+summary(mod.1) #用summary()查看线性回归的结果
+```
+
+```
+## 
+## Call:
+## lm(formula = ln_pcb ~ year, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.9224 -0.6499 -0.0124  0.5772  2.7040 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 116.615681  11.109522   10.50   &lt;2e-16 ***
+*## year         -0.058279   0.005595  -10.41   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8916 on 630 degrees of freedom
+*## Multiple R-squared:  0.1469,	Adjusted R-squared:  0.1455 
+*## F-statistic: 108.5 on 1 and 630 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+--
+
+.pull-right67[
+
+**结果解读：**
+
+- 年份变量对ln_pcb有显著影响&lt;br&gt;（*p* &lt; 2e-16  ）  
+
+- *R*&lt;sup&gt;2&lt;/sup&gt;=0.1469，表明年份变量可以解释14.69%的ln_pcb变异
+
+- 该模型对ln_pcb的预测显著优于空模型（null model：ln_pcb ~ 1，即平均值）（*F*&lt;sub&gt;1, 630&lt;/sub&gt; = 106.5，*p* &lt; 2.2e-16）
+]
+
+---
+
+### 年份对PCB浓度的影响 - 参数的解读   
+
+
+&lt;center&gt; .large[`ln_pcb = 117 - 0.0583 * year`] &lt;/center&gt;   
+.large[
+
+- **斜率-0.0583**   
+  * ln_pcb值每年减少0.0583，即PCB浓度每年降低约6%（*y* = *y*&lt;sub&gt;0·&lt;/sub&gt;e&lt;sup&gt;-0.0583·year&lt;/sup&gt;，一级动力学）
+
+
+- **截距117**  
+  * year = 0时（公元0年——无实际意义），ln_pcb的值为117    
+  * year数据需转化，使模型参数更具实际意义，更容易解读  
+
+
+- **不确定度** `Residual standard error: 0.8916`  
+  * 举例理解：1974年ln_PCB值的符合正态分布N(116.615681 - 0.058279 × 1974; 0.89)，即N(1.57, 0.89)。
+
+]
+
+???
+When putting the two parts together, the fitted model can be seen as a
+conditional normal distribution describing the probability distribution of log
+PCB concentrations.   可根据公式计算出某年ln_PCB的平均值（或预期值） 
+
+The mean of the log PCB distribution is the deterministic part of the model, and the standard deviation is the same as the standard deviation of the residuals (the random part). 
+
+---
+
+### 数据转化：设置起始年份  
+
+.pull-left67[
+
+```r
+d$yr &lt;- d$year - 1974  #以1974年为起始年
+mod.2 &lt;- lm(ln_pcb ~ yr, data=d)
+summary(mod.2)
+```
+
+```
+## 
+## Call:
+## lm(formula = ln_pcb ~ yr, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.9224 -0.6499 -0.0124  0.5772  2.7040 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.572767   0.073233   21.48   &lt;2e-16 ***
+## yr          -0.058279   0.005595  -10.41   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8916 on 630 degrees of freedom
+## Multiple R-squared:  0.1469,	Adjusted R-squared:  0.1455 
+## F-statistic: 108.5 on 1 and 630 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+.pull-right67[
+**结果解读：** 
+
+- 斜率不变,ln_pcb值每年减少0.0583  
+
+- 截距变为1.57，其含义是1974年ln_pcb的值为1.57，即PCB浓度是4.81 mg/kg（e&lt;sup&gt;1.57&lt;/sup&gt;=4.81 mg/kg）  
+
+]
+
+
+---
+
+### 体长对PCB浓度的影响  
+
+.pull-left67[
+
+```r
+mod.3 &lt;- lm(ln_pcb ~ length, data=d)
+summary(mod.3)
+```
+
+```
+## 
+## Call:
+## lm(formula = ln_pcb ~ length, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.7351 -0.5277 -0.0664  0.4085  2.4755 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+*## (Intercept) -2.159671   0.166977  -12.93   &lt;2e-16 ***
+*## length       0.048953   0.002621   18.68   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7744 on 630 degrees of freedom
+## Multiple R-squared:  0.3564,	Adjusted R-squared:  0.3554 
+## F-statistic: 348.8 on 1 and 630 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+.pull-right67[
+
+**结果解读：**  
+- 体长对ln_pcb有显著影响  
+
+- 体长每增加1 cm，ln_pcb值增加0.0490   
+
+- 截距为- 2.16，其含义是当鱼体长为0时（没有意义），ln_pcb = - 2.16  
+
+- *R*&lt;sup&gt;2&lt;/sup&gt;=0.3564，表明体长可以解释35.64%的ln_pcb变异  
+
+]
+
+
+---
+
+### 数据转化：尺寸中心化  
+
+.pull-left67[
+
+```r
+mean_length &lt;- mean(d$length) 
+d$len_c &lt;- d$length - mean_length  #各体长值减去平均体长，得到中心化的体长值  
+mod.4 &lt;- lm(ln_pcb ~ len_c, data=d)
+
+summary(mod.4)
+```
+
+```
+## 
+## Call:
+## lm(formula = ln_pcb ~ len_c, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.7351 -0.5277 -0.0664  0.4085  2.4755 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 0.905416   0.030804   29.39   &lt;2e-16 ***
+## len_c       0.048953   0.002621   18.68   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7744 on 630 degrees of freedom
+## Multiple R-squared:  0.3564,	Adjusted R-squared:  0.3554 
+## F-statistic: 348.8 on 1 and 630 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+.pull-right67[
+
+**结果解读：**   
+
+- 斜率不变，体长每增加1 cm，ln_pcb值增加0.0490  
+
+- 截距变为0.905，其含义是当鱼体长为平均值时，ln_pcb = 0.905 （即PCB浓度为2.47 mg/kg）  
+]
+
+
+
+
+---
+
+
+class: inverse, center, middle  
+
+##  多元线性回归  
+
+---
+
+## 多元线性回归  
+
+.pull-left67[
+
+```r
+mod.5 &lt;- lm(ln_pcb ~ yr + len_c, data=d)
+summary(mod.5)
+```
+
+```
+## 
+## Call:
+## lm(formula = ln_pcb ~ yr + len_c, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4927 -0.3309  0.0172  0.3538  1.9764 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+*## (Intercept)  1.877398   0.048017   39.10   &lt;2e-16 ***
+*## yr          -0.084882   0.003694  -22.98   &lt;2e-16 ***
+*## len_c        0.059915   0.001992   30.08   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.5714 on 629 degrees of freedom
+## Multiple R-squared:  0.6501,	Adjusted R-squared:  0.649 
+*## F-statistic: 584.4 on 2 and 629 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+.pull-right67[
+
+**结果解读：** 
+
+- 年份有显著影响，若控制鱼体长不变，ln_pcb每年降低0.0849  
+
+- 体长有显著影响，若控制年份不变，体长每增加1 cm，ln_pcb增加0.0599  
+
+- 截距为1.88，含义是1974年体长等于平均体长的鱼体内PCB浓度是e&lt;sup&gt;1.88&lt;/sup&gt;（即6.55）mg/kg
+
+- *R*&lt;sup&gt;2&lt;/sup&gt;=0.6501，表明年份和体长一起可以解释65.01%的ln_pcb变异  
+
+]
+
+---
+
+## 交互作用（Interaction）  
+
+.large[
+**`ln_pcb ~ yr + len_c`**  
+
+**以上模型暗含假设：**  
+
+- 年份和鱼体长独立影响ln_pcb  
+- 年份的影响（即年份的斜率）不受鱼体长的影响
+- 鱼体长的影响（即体长的斜率）在各个年份均相同 ]  
+--
+.large[
+**实际上：**    
+
+- 较大的鱼类倾向于摄食PCB浓度较高的饵料，其体内PCB随时间减少的速度应慢于小鱼  
+- 1970年代末禁用PCB，环境中PCB浓度应当逐年降低，PCB浓度与鱼体长之间的关系应当随时间而变化
+- 年份和体长在影响ln_pcb时有交互作用  
+]
+---
+
+## 包含交互作用的多元线性回归    
+
+
+```r
+mod.6 &lt;- lm(ln_pcb ~ yr * len_c, data=d)
+```
+
+等价于：
+```r
+mod.6 &lt;- lm(ln_pcb ~ yr + len_c + yr:len_c, data=d) # “yr:len_c”即“yr*len_c”
+```
+
+---
+
+## 包含交互作用的多元线性回归  
+
+.pull-left67[
+
+```r
+summary(mod.6)
+```
+
+```
+## 
+## Call:
+## lm(formula = ln_pcb ~ yr * len_c, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.5666 -0.3399  0.0269  0.3459  1.9728 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.8750967  0.0478967  39.149   &lt;2e-16 ***
+## yr          -0.0857973  0.0037088 -23.133   &lt;2e-16 ***
+## len_c        0.0526753  0.0039560  13.315   &lt;2e-16 ***
+*## yr:len_c     0.0007165  0.0003386   2.116   0.0347 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.5698 on 628 degrees of freedom
+## Multiple R-squared:  0.6526,	Adjusted R-squared:  0.6509 
+## F-statistic: 393.2 on 3 and 628 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+.pull-right67[
+
+**结果解读：** 
+
+- 年份和鱼体长在影响ln_pcb时有显著的交互作用（*p* = 0.035）  
+
+]
+
+---
+
+## 包含交互作用的多元线性回归：结果解读
+
+**`ln_pcb = 1.88 − 0.086 * yr + 0.053 * len_c + 0.00072 * yr * len_c + ε`**
+
+整理可得：  
+
+**`ln_pcb = 1.88 - (0.086 - 0.00072 * len_c) * yr + 0.053 * len_c + ε`**
+ 
+### 举例：  
+- 平均尺寸 len_c = 0（体长62.61 cm）, `ln_pcb = 1.88 - 0.085 * yr +  ε`   
+- 大鱼 len_c = 10（体长72.61 cm）,    `ln_pcb = 2.41 - 0.078 * yr +  ε`    
+
+### 解读：  
+- ln_pcb与年份、体长之间的斜率不再是常数  
+- 大鱼的ln_pcb高  
+- 而且大鱼的ln_pcb随年份增加降低得慢  
+
+---
+
+## 包含交互作用的多元线性回归：结果解读  
+
+**`ln_pcb = 1.88 − 0.086 * yr + 0.053 * len_c + 0.00072 * yr * len_c + ε`**
+
+换一种方式整理可得：   
+
+**`ln_pcb = 1.88 + (0.053 + 0.00072 * yr) * len_c − 0.086 * yr + ε`**
+
+### 举例：  
+- yr = 0 （即1974年）, `ln_pcb = 1.88 + 0.053 * len_c +  ε`  
+- yr = 10（即1984年）, `ln_pcb = 1.02 + 0.060 * len_c + ε` 
+
+
+### 解读：  
+- 年份确定，则ln_pcb与体长关系仍是线性的  
+- ln_pcb随体长增加的趋势（即斜率）逐年增强  
+
+
+---
+class: inverse, center, middle  
+
+## 提取线性回归结果中的信息  
+
+
+---
+
+### 如何提取模型中包含的信息？ 
+
+
+**查看mod.6包含了哪些信息**   
+
+
+```r
+names(mod.6)
+```
+
+```
+##  [1] "coefficients"  "residuals"     "effects"       "rank"         
+##  [5] "fitted.values" "assign"        "qr"            "df.residual"  
+##  [9] "xlevels"       "call"          "terms"         "model"
+```
+
+
+**参数值**
+
+```r
+mod.6$coefficients
+```
+
+```
+##   (Intercept)            yr         len_c      yr:len_c 
+##  1.8750966573 -0.0857973140  0.0526753289  0.0007164939
+```
+---
+
+### 如何提取模型中包含的信息？ 
+
+**预测值**  
+
+```r
+mod.6$fitted.values[1:10] # 为节省空间，只显示前10个预测值
+```
+
+```
+##        1        2        3        4        5        6        7        8 
+## 2.577450 2.523932 2.189443 2.095787 2.242961 2.216202 2.082407 2.135925 
+##        9       10 
+## 1.359912 1.159219
+```
+
+**残差** 
+
+```r
+mod.6$residuals[1:10]  #显示前10个残差
+```
+
+```
+##           1           2           3           4           5           6 
+##  0.86616834 -0.45706886  1.09522028  0.02046897  0.18184131  0.31749446 
+##           7           8           9          10 
+##  0.09234471  0.24362098  0.12169234  0.40939672
+```
+
+
+---
+
+### 如何提取模型中包含的信息？
+
+**查看summary(mod.6)包含了哪些信息**  
+
+
+```r
+names(summary(mod.6))
+```
+
+```
+##  [1] "call"          "terms"         "residuals"     "coefficients" 
+##  [5] "aliased"       "sigma"         "df"            "r.squared"    
+##  [9] "adj.r.squared" "fstatistic"    "cov.unscaled"
+```
+
+有一些信息与**`mod.6`**中所含内容重复  
+
+.pull-left37[
+**提取*R*&lt;sup&gt;2&lt;/sup&gt;和*R*&lt;sup&gt;2&lt;/sup&gt;&lt;sub&gt;adj&lt;/adj&gt; ** 
+
+
+```r
+summary(mod.6)$r.squared
+```
+
+```
+## [1] 0.6526017
+```
+
+```r
+summary(mod.6)$adj.r.squared
+```
+
+```
+## [1] 0.6509421
+```
+]
+
+
+.pull-right37[
+
+** 带显著性检验结果的参数值 **  
+
+```r
+round(summary(mod.6)$coefficients, 5) #为节省空间，显示5位小数
+```
+
+```
+##             Estimate Std. Error   t value Pr(&gt;|t|)
+## (Intercept)  1.87510    0.04790  39.14874  0.00000
+## yr          -0.08580    0.00371 -23.13349  0.00000
+## len_c        0.05268    0.00396  13.31515  0.00000
+## yr:len_c     0.00072    0.00034   2.11612  0.03473
+```
+]
+
+---
+
+### 模型参数的95%置信区间  
+
+
+
+```r
+confint(mod.6)
+```
+
+```
+##                     2.5 %       97.5 %
+## (Intercept)  1.781040e+00  1.969153806
+## yr          -9.308045e-02 -0.078514178
+## len_c        4.490665e-02  0.060444004
+## yr:len_c     5.158977e-05  0.001381398
+```
+
+---
+class: inverse, middle, center 
+
+## 多元线性回归中&lt;br&gt;各解释变量的相对贡献  
+
+---
+
+### 方法1：根据标准化的斜率（即*b*值或β值）判断  
+
+
+```r
+library(QuantPsyc) # lm.beta函数在此程序包里
+lm.beta(mod.6) #此处以mod.6为例
+```
+
+```
+##           yr        len_c     yr:len_c 
+## -0.564247629  0.642357315  0.004712035
+```
+**结果解读：**  
+- 年份（yr）每增加一个标准差，响应变量（ln_pcb）减少0.564个标准差  
+
+- 体长（len_c）每增加一个标准差，响应变量（ln_pcb）增加0.642个标准差  
+
+- 体长与年份之积（yr*len_c）每增加一个标准差，响应变量（ln_pcb）增加0.005个标准差 
+
+**综上：** 在该模型中，体长对于解释鱼体内PCB浓度有更大的贡献。
+
+
+???
+https://blog.minitab.com/blog/adventures-in-statistics-2/how-to-identify-the-most-important-predictor-variables-in-regression-models
+
+http://cran.nexr.com/web/packages/QuantPsyc/index.html
+
+---
+
+### 方法2：将*R*&lt;sup&gt;2&lt;/sup&gt;分解到各个解释变量    
+
+.pull-left57[
+
+```r
+library(relaimpo) 
+calc.relimp(mod.6)
+```
+
+```
+## Response variable: ln_pcb 
+## Total response variance: 0.9302833 
+## Analysis based on 632 observations 
+## 
+## 3 Regressors: 
+## yr len_c yr:len_c 
+## Proportion of variance explained by model: 65.26%
+## Metrics are not normalized (rela=FALSE). 
+## 
+## Relative importance metrics: 
+## 
+##                  lmg
+## yr       0.220325413
+## len_c    0.429799161
+## yr:len_c 0.002477119
+## 
+## Average coefficients for different model sizes: 
+## 
+##                   1X         2Xs           3Xs
+## yr       -0.05827908 -0.08488223 -0.0857973140
+## len_c     0.04895337  0.05991484  0.0526753289
+## yr:len_c         NaN         NaN  0.0007164939
+```
+]
+
+.pull-right57[
+**结果解读：**  
+- 该模型可解释响应变量（ln_pcb）65.26%的变异  
+- 年份（yr）贡献了其中的22.03%
+- 体长（len_c）贡献了其中的42.98%  
+- 体长与年份之积（yr*len_c）贡献了0.25%
+
+计算各解释变量的贡献是一个复杂的问题，当解释变量之间存在相关性时，这个问题本身就难以清楚定义，以上只是提供了大致客观有用的度量。  
+
+**更多信息请参考**：http://prof.beuth-hochschule.de/groemping/software/relaimpo/  
+]
+
+
+
+???
+
+Johnson, J. W. (2000). A heuristic method for estimating the relative weight of predictor variables in multiple regression. Multivariate Behavioral Research, 35(1), 1-19.
+https://www.tandfonline.com/doi/abs/10.1207/S15327906MBR3501_1
+The relative weight of predictor variables in multiple regression is difficult to determine because of non-zero predictor intercorrelations. Relative weight (also called relative importance by some researchers) is defined here as the proportionate contribution each predictor makes to R2, considering both its unique contribution and its contribution when combined with other variables. Although there are no unambiguous measures of relative weight when variables are correlated, some measures have been shown to provide meaningful results (Budescu, 1993; Lindeman, Merenda, &amp; Gold, 1980). These measures are very difficult to implement, however, when the number of predictors is greater than about five. A method is proposed that is computationally efficient with any number of predictors, and is shown to produce results that are very similar to those produced by more complex methods. Recommendations are made for when this procedure may be applied and in what situations it is not appropriate. 
+
+ 
+---
+class: inverse, middle, center  
+
+## 模型的诊断  
+
+
+---
+
+## 线性模型的假设  
+
+.large[
+1. **线性** Linearity: The relationship between X and the mean of Y is linear.
+
+1. **同方差性** Homoscedasticity: The variance of residual is the same for any value of X.
+
+1. **独立性** Independence: Independence of residuals error terms. Observations are independent of each other.
+
+1. **正态分布** Normality: The residuals are normally distributed. For any fixed value of X, Y is normally distributed.
+]
+
+???
+
+Regression Model Diagnostics  
+
+http://www.sthda.com/english/articles/39-regression-model-diagnostics/161-linear-regression-assumptions-and-diagnostics-in-r-essentials/
+
+---
+
+## 诊断：是否线性    
+
+.pull-left[
+
+```r
+plot(mod.6, which=1)
+```
+
+&lt;img src="figs/diag_1.png" width="481.8" height="414.7" /&gt;
+]  
+
+
+.pull-right[
+
+### 理想情况：
+- 残差均匀分布在0上下  
+
+- 残差趋势线（红线）接近0，且无明显趋势
+
+### 解读：
+- 残差略有非线性，表明存在当前模型未能解释的趋势
+
+- 可以识别出数个异常点（行号标出）
+
+]
+
+???
+
+
+Residuals are leftover of the outcome variable after fitting a model (predictors) to data and they could reveal unexplained patterns in the data by the fitted model.
+---
+
+## 诊断：是否正态分布    
+
+.pull-left[
+```r
+plot(mod.6, which=2)
+```
+
+
+&lt;img src="figs/diag_2.png" width="481.8" height="414.7" /&gt;
+]
+
+.pull-right[
+
+### 理想情况：
+- 点均落在QQ图对角线上，即残差呈正态分布    
+
+### 解读：
+- 图上残差大多落在对角线上，较符合正态分布
+
+- 可以识别出数个异常点（行号标出）
+
+]
+
+---
+
+## 诊断：是否同方差性（homoscedasticity） 
+
+Scale-Location (Spread-Location)图
+.pull-left[
+```r
+plot(mod.6, which=3)
+```
+
+
+&lt;img src="figs/diag_3.png" width="438" height="377" /&gt;
+]
+
+.pull-right[
+
+### 理想情况：
+- 标准化残差的平方根（y）的范围不随着模型预测值（x）明显变化，分散程度相等   
+- 红线水平，无明显趋势
+
+### 解读：
+- 残差的标准差（SD）随模型预测值略有增大，存在异方差性  
+
+]
+
+???
+
+同方差性 homoscedasticity
+异方差性 heteroscedasticity
+---
+
+## 问题数据点    
+
+.large[
+**离群点**（outlier）: an observation that has a large residual   
+
+**高杠杆点**（leverage point）: an observation that has a value of x that is far away from the mean of x 
+
+**高影响点**（influential observations）: an observation that changes the slope of the line
+
+]
+
+???
+如发现异常点，应检查是否有输入错误、测定错误等。如果错误，数据删除。
+异常点可能会提示重要的信息，若排除错误，需要进一步研究。
+
+---
+
+## 诊断：高影响点（influential data point）的识别  
+
+
+
+.pull-left[
+
+```r
+plot(mod.6, which=4)
+```
+
+&lt;img src="figs/diag_4.png" width="481.8" height="414.7" /&gt;
+]
+
+.pull-right[
+
+- 高影响点：有无该点，模型参数值差别较大  
+
+- 用Cook’s distance来度量某个点对回归结果的影响
+
+- 当Cook’s distance远大于1时，则该点可能是高影响点，需检查该数据是否有误
+
+- 图上显示Cook’s distance均小于1，说明无高影响点
+
+]
+
+
+---
+
+## 诊断：高杠杆点（high leverage point）    
+
+
+
+```r
+plot(mod.6, which=5)
+
+```
+.pull-left[
+&lt;img src="figs/diag_5.png" width="481.8" height="414.7" /&gt;
+]
+
+.pull-right[
+
+- 高杠杆点：预测变量（x）值远高于其均值的点  
+
+- 高杠杆 + 高残差 = 高影响
+
+]
+
+---
+
+## 诊断：异常点识别
+
+```r
+plot(mod.6, which=6)
+```
+
+
+&lt;img src="figs/diag_6.png" width="481.8" height="414.7" /&gt;
+
+
+---
+
+## 理解异常点、高杠杆点、高影响点  
+
+.pull-left[
+
+
+
+
+&lt;img src="figs/lev_inf_cn.png" width="532" height="454" /&gt;
+
+]
+
+
+.pull-right[
+
+
+
+
+&lt;img src="figs/lev_inf_cn_2.png" width="307" height="269" /&gt;
+
+]
+
+
+---
+
+class: inverse, middle, center  
+
+## 模型的改进
+
+---
+
+## 基于诊断结果改进模型  
+
+.large[ - ln_pcb与鱼体长（len_c）之间的关系可能不是线性的]   
+
+.large[ - 尝试往模型中加入len_c&lt;sup&gt;2&lt;/sup&gt;项]  
+
+
+
+&lt;img src="figs/pcb_6.png" width="620" height="269" /&gt;
+
+
+---
+
+## 基于诊断结果改进模型 
+
+.pull-left[
+
+```r
+mod.7 &lt;- lm(ln_pcb ~ yr * len_c + I(len_c^2) , data=d)
+
+summary(mod.7)
+```
+
+```
+## 
+## Call:
+## lm(formula = ln_pcb ~ yr * len_c + I(len_c^2), data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4683 -0.3196  0.0236  0.3456  1.9182 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.7941042  0.0509823  35.191  &lt; 2e-16 ***
+## yr          -0.0846817  0.0036692 -23.079  &lt; 2e-16 ***
+## len_c        0.0612353  0.0043955  13.931  &lt; 2e-16 ***
+*## I(len_c^2)   0.0005536  0.0001307   4.237 2.61e-05 ***
+## yr:len_c     0.0002539  0.0003515   0.722     0.47    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.5623 on 627 degrees of freedom
+## Multiple R-squared:  0.6623,	Adjusted R-squared:  0.6601 
+## F-statistic: 307.4 on 4 and 627 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+.pull-right[
+
+###结果：
+
+- len_c&lt;sup&gt;2&lt;/sup&gt;项斜率的p值为2.61e-05，ln_pcb与len_c之间的关系非线性  
+
+]
+
+---
+
+## 模型的改进 - 设置虚拟变量 （Dummy Variables）
+
+.large[- `mod.6`显示年份与鱼体长存在交互作用]  
+
+
+.large[- 一个可能的原因是：大鱼、小鱼不应该混在一起分析]  
+
+
+.large[-  应该允许大鱼、小鱼有各自的截距和斜率]  
+
+--
+
+
+```r
+d$size &lt;- "small"
+d$size[d$length&gt;60] &lt;- "large" #体长大于60为大鱼，否则为小鱼  
+```
+
+```r
+mod.8 &lt;- lm(ln_pcb ~ yr*size + len_c*size, data=d)
+summary(mod.8)
+
+```
+
+### 等价于：  
+
+```r
+lm(ln_pcb ~ yr + len_c, data=subset(d, size=="small"))
+lm(ln_pcb ~ yr + len_c, data=subset(d, size=="large"))
+```
+
+---
+
+## 模型的改进 - 设置虚拟变量 （Dummy Variables）  
+
+
+```
+## 
+## Call:
+## lm(formula = ln_pcb ~ yr * size + len_c * size, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4446 -0.3076  0.0381  0.3346  1.8848 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      1.747101   0.068561  25.482  &lt; 2e-16 ***
+## yr              -0.084617   0.004537 -18.651  &lt; 2e-16 ***
+## sizesmall       -0.132445   0.123168  -1.075    0.283    
+## len_c            0.077569   0.004521  17.159  &lt; 2e-16 ***
+## yr:sizesmall     0.003828   0.007565   0.506    0.613    
+## sizesmall:len_c -0.035479   0.006536  -5.428 8.15e-08 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.5596 on 626 degrees of freedom
+## Multiple R-squared:  0.666,	Adjusted R-squared:  0.6633 
+## F-statistic: 249.6 on 5 and 626 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+## 模型的改进 - 设置虚拟变量 （Dummy Variables） 
+
+所得结果将大鱼、小鱼的模型合二为一：
+
+`ln_pcb = 1.75 - 0.0846 * yr - 0.132445sizesmall + 0.0776len_c + 0.003828 yr * sizesmall - 0.035479 * sizesmall * len_c`  
+
+
+
+- 小鱼（sizesmall = 1）  
+`ln_pcb = 1.62 -0.0807 * yr  + 0.0421 len_c`  
+
+- 大鱼(sizesmall = 0)  
+`ln_pcb = 1.75 - 0.0846 * yr   + 0.0776len_c`  
+
+---
+
+class: inverse, center, middle  
+
+## 模型的比较  
+
+---
+
+## 模型比较 - ANOVA  
+
+
+```r
+anova(mod.6, mod.7)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: ln_pcb ~ yr * len_c
+## Model 2: ln_pcb ~ yr * len_c + I(len_c^2)
+##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1    628 203.93                                  
+## 2    627 198.25  1    5.6763 17.952 2.605e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+- **解读**： mod.7相比mod.6显著改善了模型的解释能力（*p* &lt; 0.001）
+
+
+---
+
+## 模型比较 - AIC和BIC 
+
+.pull-left[
+#### AIC：Akaike information criterion 
+
+
+```r
+AIC(mod.6)
+```
+
+```
+## [1] 1088.662
+```
+
+```r
+AIC(mod.7)
+```
+
+```
+## [1] 1072.821
+```
+#### mod.7的AIC小于mod.6，表明mod.7优于mod.6
+]
+
+.pull-right[
+#### BIC：Bayesian information criterion
+
+
+```r
+BIC(mod.6)
+```
+
+```
+## [1] 1110.907
+```
+
+```r
+BIC(mod.7)
+```
+
+```
+## [1] 1099.514
+```
+#### mod.7的BIC小于mod.6，表明mod.7优于mod.6
+]
+
+???
+
+How do I interpret the AIC
+https://www.r-bloggers.com/how-do-i-interpret-the-aic/
+
+---
+
+class: inverse, center, middle  
+
+## 附：基础概念  
+
+---
+
+## 基础概念  
+
+.pull-left[
+- Y的观测值：*y*&lt;sub&gt;1&lt;/sub&gt;，*y*&lt;sub&gt;2&lt;/sub&gt;，*y*&lt;sub&gt;3&lt;/sub&gt;， ...，*y*&lt;sub&gt;*n*&lt;/sub&gt;  
+&lt;br&gt;
+
+- Y的模型预测值：*f*&lt;sub&gt;1&lt;/sub&gt;，*f*&lt;sub&gt;2&lt;/sub&gt;，*f*&lt;sub&gt;3&lt;/sub&gt;，...，*f*&lt;sub&gt;*n*&lt;/sub&gt;  
+&lt;br&gt;
+
+- 残差：ε&lt;sub&gt;i&lt;/sub&gt; = *y*&lt;sub&gt;i&lt;/sub&gt; − *f*&lt;sub&gt;i&lt;/sub&gt;  
+&lt;br&gt;
+
+- Y观测值的平均值：$$\bar{y}=\frac{\sum y_i}{n}$$
+]
+
+.pull-right[
+- 总平方和：
+`$$SS_\text{T} = \sum (y_i-\bar{y})^2$$`
+- 模型平方和：
+`$$SS_\text{M} = \sum (f_i-\bar{y})^2$$`
+- 残差平方和：
+`$$SS_\text{R} = \sum (y_i-f_i)^2$$`
+- 决定系数：
+`$$R^2 = 1-\frac{SS_\text{R}}{SS_\text{T}} = \frac{SS_\text{M}}{SS_\text{T}}$$`  
+
+]
+
+---
+
+## 基础概念  
+
+.pull-left[
+**决定系数**  
+`$$R^2=\frac{SS_\text{M}}{SS_\text{T}}$$`
+
+- SS&lt;sub&gt;M&lt;/sub&gt; ：模型可以解释的变异度
+- SS&lt;sub&gt;T&lt;/sub&gt; ：总的变异度  
+]
+
+.pull-right[
+
+**调整决定系数**   
+
+`$$R^2_{\text {adj}}=1-(1-R^2)\frac{n-1}{n-p-1}$$`
+
+*n*：样本数  
+*p*：预测变量的个数  
+
+]
+
+&lt;br&gt;
+&lt;br&gt;
+
+往模型中添加预测变量，即使新添加的预测变量并无显著影响，*R*&lt;sup&gt;2&lt;/sup&gt;仍持续增大，  表面上模型的预测效果改善，但这种改善并不真实。针对此情况，需对*R*&lt;sup&gt;2&lt;/sup&gt;进行校正，此即为*R*&lt;sup&gt;2&lt;/sup&gt;&lt;sub&gt;adj&lt;/sub&gt;。*R*&lt;sup&gt;2&lt;/sup&gt;&lt;sub&gt;adj&lt;/sub&gt;对添加非显著预测变量做出惩罚，因此，其值不一定随预测变量个数增加而上升。  
+
+
+---
+
+## 基础概念  
+
+.large[决定系数（coefficient of determination，*R*&lt;sup&gt;2&lt;/sup&gt;）]
+
+- .large[响应变量的变异中可由预测变量解释的占比]  
+
+- .large[用于判断统计模型的解释力]  
+
+- .large[对于简单线性回归，决定系数（*R*&lt;sup&gt;2&lt;/sup&gt;）为相关系数（*r*）的平方]  
+
+- .large[对于多元线性回归，决定系数是多重相关系数的平方]  
+
+
+---
+
+## 基础概念  
+
+.pull-left[
+
+&lt;br&gt; 
+
+Source of Variation |平方和 | df | 平均平方和 
+-----------|--------------------|-------------------------|---------
+模型平方和 |SS&lt;sub&gt;M&lt;/sub&gt; |*p*- 1        |MS&lt;sub&gt;M&lt;/sub&gt; = SS&lt;sub&gt;M&lt;/sub&gt; / (*p*-1)     
+残差平方和 |SS&lt;sub&gt;R&lt;/sub&gt; |*n* - *p*  |MS&lt;sub&gt;R&lt;/sub&gt; = SS&lt;sub&gt;R&lt;/sub&gt; / (*n* - *p*)      
+总平方和   |SS&lt;sub&gt;T&lt;/sub&gt; |*n* - 1    |                                    
+
+ *n*：样本数    
+ *p*：预测变量的个数  
+]
+
+
+.pull-right[  
+&lt;br&gt;  
+
+#### *F*检验，检验模型的显著性  
+`$$F=\frac{MS_\text M}{MS_\text R}$$`
+
+
+
+#### *t*检验，检验参数的显著性  
+`$$t=\frac{b_{\text{observed}}}{SE_b}$$`
+`$$df=n-p-1$$`
+]
+
+
+---
+### 要点小结
+
+- 简单线性回归：`lm(y ~ x, data = d)`  
+
+- 多元线性回归 
+  * 预测变量效应相加：`lm(y ~ x1 + x2, data = d)`   
+  * 预测变量交互作用：`lm(y ~ x1 * x2, data = d)`     
+
+- 含有非线性项的线性回归：`lm(y ~ x1 + x1^2 + x2, data = d)`    
+
+- 含有虚拟变量的线性回归：`lm(y ~ x1 * dummy + x2 * dummy, data = d)`  
+
+- 线性回归结果的解读
+  * 斜率的*p*值 （*t*检验）
+  * 模型的*p*值（*F*检验）
+  * *R*&lt;sup&gt;2&lt;/sup&gt;  
+  * 截距  
+
+---
+### 要点小结
+
+- 模型的诊断  
+ * 线性：残差无趋势
+ * 残差正态分布
+ * 同方差性
+ * 离群点、高杠杆点、高影响点
+
+- 模型的比较  
+  * `anova(mod.1, mod.2)`
+  * `AIC(mod.1)` vs. `AIC(mod.2)` (选AIC小的)
+  * `BIC(mod.1)` vs. `BIC(mod.2)` (选BIC小的)
+
+
+---
+
+## 参考文献：
+
+.large[Qian S. 2017. Environmental and Ecological Statistics with R. 2nd ed. CRC Press. Chapter 5 Linear Models. [有中文版，阅读第5章]]
+
+.large[Field A., Miles J., Field Z. 2012. Discovering Statistics Using R. SAGE Publications Ltd. Chapter 7 Regression.]
+
+.large[Roback, P., &amp; Legler, J. 2021. Beyond Multiple Linear Regression: Applied Generalized Linear Models and Multilevel Models in R. CRC Press.]
+
+https://bookdown.org/roback/bookdown-BeyondMLR/
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
