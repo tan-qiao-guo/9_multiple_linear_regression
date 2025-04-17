@@ -174,9 +174,75 @@ library(relaimpo)
 
 ## 了解数据  
 
+.pull-left[
+
 
 ```r
 d0 &lt;- read.csv("laketrout.csv")
+
+anyNA(d0) # 检查是否存在NA
+```
+
+```
+## [1] TRUE
+```
+
+```r
+sum(is.na(d0)) # 统计NA的总数量
+```
+
+```
+## [1] 16
+```
+
+```r
+colSums(is.na(d0)) #按列统计NA的数量
+```
+
+```
+## length    pcb      n   year 
+##     16      0      0      0
+```
+
+]
+
+
+.pull-right[
+
+
+```r
+d0[!complete.cases(d0), ] #显示包含NA的行
+```
+
+```
+##     length   pcb n year
+## 130     NA 12.00 1 1982
+## 140     NA  1.82 1 1983
+## 141     NA  1.17 1 1983
+## 142     NA  1.50 1 1983
+## 143     NA  0.60 1 1983
+## 144     NA  1.29 1 1983
+## 145     NA  1.52 1 1983
+## 146     NA  1.83 1 1983
+## 153     NA  3.01 1 1983
+## 154     NA  1.43 1 1983
+## 202     NA  1.75 1 1984
+## 203     NA  0.75 1 1984
+## 204     NA  0.87 1 1984
+## 205     NA  0.77 1 1984
+## 206     NA  2.95 1 1984
+## 207     NA  1.45 1 1984
+```
+
+]
+
+
+---
+
+## 了解数据  
+
+
+```r
 d &lt;- na.omit(d0) #length存在缺失值，为便于分析，去除缺失值
 head(d)
 ```
@@ -205,9 +271,7 @@ str(d)
 ##   ..- attr(*, "names")= chr [1:16] "130" "140" "141" "142" ...
 ```
 
-&lt;br&gt;  
 
-数据来源：Qian S. 2017. Environmental and Ecological Statistics with R. 2nd ed. CRC Press.
 
 ---
 
@@ -1473,7 +1537,7 @@ class: inverse, center, middle
 
 Source of Variation |平方和 | df | 平均平方和 
 -----------|--------------------|-------------------------|---------
-模型平方和 |SS&lt;sub&gt;M&lt;/sub&gt; |*p*        |MS&lt;sub&gt;M&lt;/sub&gt; = SS&lt;sub&gt;M&lt;/sub&gt; / (*p*)     
+模型平方和 |SS&lt;sub&gt;M&lt;/sub&gt; |*p*        |MS&lt;sub&gt;M&lt;/sub&gt; = SS&lt;sub&gt;M&lt;/sub&gt; / *p*     
 残差平方和 |SS&lt;sub&gt;R&lt;/sub&gt; |*n* - *p* -1 |MS&lt;sub&gt;R&lt;/sub&gt; = SS&lt;sub&gt;R&lt;/sub&gt; / (*n* - *p*-1)      
 总平方和   |SS&lt;sub&gt;T&lt;/sub&gt; |*n* - 1    |                                    
 

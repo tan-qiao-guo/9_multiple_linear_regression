@@ -167,16 +167,41 @@ library(relaimpo)
 
 ## 了解数据  
 
+.pull-left[
+
 ```{r}
 d0 <- read.csv("laketrout.csv")
+
+anyNA(d0) # 检查是否存在NA
+sum(is.na(d0)) # 统计NA的总数量
+colSums(is.na(d0)) #按列统计NA的数量
+
+```
+
+]
+
+
+.pull-right[
+
+```{r}
+
+d0[!complete.cases(d0), ] #显示包含NA的行
+```
+
+]
+
+
+---
+
+## 了解数据  
+
+```{r}
 d <- na.omit(d0) #length存在缺失值，为便于分析，去除缺失值
 head(d)
 str(d)
 ```
 
-<br>  
 
-数据来源：Qian S. 2017. Environmental and Ecological Statistics with R. 2nd ed. CRC Press.
 
 ---
 
@@ -1236,7 +1261,7 @@ $$R^2_{\text {adj}}=1-(1-R^2)\frac{n-1}{n-p-1}$$
 
 Source of Variation |平方和 | df | 平均平方和 
 -----------|--------------------|-------------------------|---------
-模型平方和 |SS<sub>M</sub> |*p*        |MS<sub>M</sub> = SS<sub>M</sub> / (*p*)     
+模型平方和 |SS<sub>M</sub> |*p*        |MS<sub>M</sub> = SS<sub>M</sub> / *p*     
 残差平方和 |SS<sub>R</sub> |*n* - *p* -1 |MS<sub>R</sub> = SS<sub>R</sub> / (*n* - *p*-1)      
 总平方和   |SS<sub>T</sub> |*n* - 1    |                                    
 
