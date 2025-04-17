@@ -1120,6 +1120,39 @@ plot(mod.6, which=3)
 同方差性 homoscedasticity
 异方差性 heteroscedasticity
 ---
+## 理解偏差（Bias）和同方差性（Homoscedasticity）  
+
+.pull-left[
+&lt;img src="figs/resid-plots.gif" width="567" height="424" /&gt;
+]
+
+.pull-right[
+
+* 红色水平线：零残差线（理想情况残差应围绕这条线随机分布，即a图） 
+
+#### 偏差（Bias）：  
+
+* Unbiased（无偏）：残差整体围绕零对称分布，没有系统性偏差；  
+
+* Biased（有偏）：残差平均值偏离零，或出现系统性趋势，说明模型存在系统性误差。  
+
+#### 同方差性（Homoscedasticity）：
+
+* Homoscedastic（同方差）：残差的波动幅度一致；
+
+* Heteroscedastic（异方差）：残差的波动幅度随拟合值改变，比如“漏斗状”或“弧形”。
+
+
+]
+
+???
+出现 偏差（b, c, e, f）：可能需要加入新的变量、使用多项式或非线性模型；
+
+出现 异方差（d, e, f）：可能需使用加权最小二乘、变换因变量（如log变换）或采用鲁棒回归；
+
+只有 (a) 是理想的残差图，符合线性回归的假设。
+
+---
 
 ## 问题数据点    
 
