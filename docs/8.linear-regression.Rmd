@@ -1230,14 +1230,14 @@ $$R^2_{\text {adj}}=1-(1-R^2)\frac{n-1}{n-p-1}$$
 
 ## 基础概念  
 
-.pull-left[
+.pull-left67[
 
 <br> 
 
 Source of Variation |平方和 | df | 平均平方和 
 -----------|--------------------|-------------------------|---------
-模型平方和 |SS<sub>M</sub> |*p*- 1        |MS<sub>M</sub> = SS<sub>M</sub> / (*p*-1)     
-残差平方和 |SS<sub>R</sub> |*n* - *p*  |MS<sub>R</sub> = SS<sub>R</sub> / (*n* - *p*)      
+模型平方和 |SS<sub>M</sub> |*p*        |MS<sub>M</sub> = SS<sub>M</sub> / (*p*)     
+残差平方和 |SS<sub>R</sub> |*n* - *p* -1 |MS<sub>R</sub> = SS<sub>R</sub> / (*n* - *p*-1)      
 总平方和   |SS<sub>T</sub> |*n* - 1    |                                    
 
  *n*：样本数    
@@ -1245,7 +1245,7 @@ Source of Variation |平方和 | df | 平均平方和
 ]
 
 
-.pull-right[  
+.pull-right67[  
 <br>  
 
 #### *F*检验，检验模型的显著性  
